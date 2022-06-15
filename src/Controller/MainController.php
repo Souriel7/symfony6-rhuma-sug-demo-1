@@ -3,13 +3,32 @@
 namespace App\Controller;
 
 use App\Entity\Produit;
+use App\Repository\CommandeRepository;
 use App\Repository\ProduitRepository;
+use App\Services\PanierService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class MainController extends AbstractController
 {
+    // charge la commande enregistrée en bdd s'il y en a une dans le panier
+    #[Route('/initAfterLogin', name: 'initAfterLogin')]
+    public function initAfterLogin(CommandeRepository $commandeRepository, PanierService $panierService)
+    {
+        // 1 - on récupère la commande enregistré en bdd
+        // SELECT * FROM commande WHERE user_id = 1 and etat = 0
+        $commande = $commandeRepository->findOneBy(['user' => $this->getUser(), 'etat' => 0]);
+        if ($commande) {
+            // 2 - on récupère les produits de la commande et on les ajoute au panier
+            foreach ($commande->getCommandeProduits() as $commandeProduit) {
+                $panierService->setProduitPanier($commandeProduit->getProduit()->getId(), $commandeProduit->getQuantite());
+            }
+        }
+        return $this->redirectToRoute('app_main');
+    }
+
+
     #[Route('/', name: 'app_main')]
     public function index(ProduitRepository $produitRepository): Response
     {
