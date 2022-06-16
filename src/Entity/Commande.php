@@ -22,6 +22,7 @@ class Commande
     private $etat;
 
     #[ORM\OneToMany(mappedBy: 'commande', targetEntity: CommandeProduit::class)]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private $commandeProduits;
 
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'commandes')]

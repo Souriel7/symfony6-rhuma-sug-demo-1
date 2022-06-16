@@ -44,7 +44,12 @@ class AppFixtures extends Fixture
 
         $toto = new User();
         $toto->setNom('Toto');
+        $toto->setprenom('Toto');
         $toto->setEmail('toto@toto.fr');
+        $toto->setAdresse('1 rue de la paix');
+        $toto->setTelephone('0612345678');
+        $toto->setCp('75000');
+        $toto->setVille('Paris');
         $hashedPassword = $this->encoder->hashPassword($toto, 'toto');
         $toto->setPassword($hashedPassword);
         $manager->persist($toto);
